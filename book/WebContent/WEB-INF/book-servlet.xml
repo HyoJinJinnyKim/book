@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context  
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+       
+<!-- 1. annotation 인식 태그
+spring mvc:
+@Controller, @RequestMapping, @RequestParam, @ModelAttribute,
+mybatis:
+@Service, @Component, @Autowired -->
+<context:component-scan base-package="book" />
+	
+<!--2. view 정보 제공(경로와 확장자) : viewResolver
+url: http://ip:port/프로젝트명/*.jsp
+저장경로: 프로젝트명/WEBCONTENT/*.jsp
+-->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	
+	<!--bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" -->
+        <!--property name="maxUploadSize" value="52428800"/-->    <!-- 50MB -->
+	 	<!-- property name="maxInMemorySize" value="1048576"/-->    <!-- 1MB -->
+	<!--/bean-->
+
+	
+<!-- 3. mybatis 연동: dataSource, sqlSessionFactory, sqlSessionTemplate bean 태그들 3개  -->
+<!-- 3-1. service, dao, vo, 트랜잭션 처리 -->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:xe" />
+		<property name="username" value="hyo" />
+		<property name="password" value="hyo" />
+	</bean>
+
+	<!-- 3-2. SqlSessionFactory 
+	spring 일반환경에서 xml파일은 src폴더 아래에 위치함
+	SPRING MVC 환경에서 xml파일은 WEBCONTENT폴더 아래에 위치해야한다.-->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="/WEB-INF/book_configuration.xml" />
+	</bean>
+
+	<!-- 3-3. mybatis : SqlSession 만들기 spring : SqlSesssionTemplate(SqlSession하위) -->
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory" />
+	</bean>
+
+</beans>
+

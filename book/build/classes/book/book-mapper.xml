@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="book">
+	<!-- 컬럼명=변수명 동일시 자동 타입 변경 : number:int resultMap의 역할 테이블과 vo간의 mapping: 
+		컬럼명과 변수명 매핑 또는 컬럼타입과 변수타입 매핑 -->
+
+
+<select id="all" resultType="book.BookVO">
+	select bookseq, bookfile, booktitle, bookauthor, bookprice, booktag, to_char(booktime, 'yyyy-mm-dd-hh24-mi-ss') booktime 
+	from book 
+	order by bookseq desc
+</select>
+	
+<select id="one" parameterType="int" resultType="book.BookVO">
+	select bookseq, bookfile, booktitle, bookauthor, bookprice, booktag, to_char(booktime, 'yyyy-mm-dd-hh24-mi-ss') booktime
+	from book 
+	where bookseq = #{seq}
+</select>
+
+
+
+
+<select id="bookCount" resultType="int"> <!-- 게시물 갯수 세는거  -->
+	select count(*) bookCount from book
+</select>
+	
+
+
+<select id="bookSearch" parameterType="book.BookVO" resultType="book.BookVO">
+	select * from book
+	where bookprice &lt;= #{bookprice}
+	order by ${orderby} 
+</select>
+
+
+
+<select id="maxBookseq" resultType="int">
+	select max(bookseq) from book
+</select>
+
+<insert id="insertBook" parameterType="book.BookVO">
+	INSERT INTO book
+	VALUES (#{bookseq}, #{bookfile}, #{booktitle}, #{bookauthor}, #{bookprice}, #{booktag}, sysdate )
+</insert>
+
+<delete id="deleteBook" parameterType="int">
+delete book where bookseq =#{seq}
+</delete>
+
+<update id="updateBook"  parameterType="book.BookVO" >
+update book 
+set booktag=#{booktag}
+where bookseq = #{bookseq}
+</update> 
+
+
+
+
+</mapper>
